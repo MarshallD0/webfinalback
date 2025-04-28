@@ -1,37 +1,28 @@
 import { Request, Response } from 'express';
 import { AuthController } from '../controller/auth.controller';
-import { AuthResult } from '../types/auth-result';
+import { IDBService } from '../db/IDBService';
 
 export class AuthHandler {
-    private authController: AuthController;
+    private controller: AuthController;
 
-    constructor(authController: AuthController) {
-        this.authController = authController;
+    constructor(dbService: IDBService) {
+        this.controller = new AuthController(dbService);
     }
 
-    async login(request: Request, response: Response): Promise<void> {
+    async login(req: Request, res: Response): Promise<void> {
         try {
-            const { username, password } = request.body;
-            
-            if (!username || !password) {
-                response.status(400).json({
-                    success: false,
-                    error: "Usuario y contraseña son requeridos"
-                });
-                return;
-            }
-
-            const result = await this.authController.authenticate(username, password);
+            const { username, password } = req.body;
+            const result = await this.controller.authenticate(username, password);
             
             if (result.success) {
-                response.json(result);
+                res.json(result);
             } else {
-                response.status(401).json(result);
+                res.status(401).json(result);
             }
         } catch (error) {
-            response.status(500).json({
-                success: false,
-                error: "Error interno del servidor"
+            res.status(500).json({ 
+                success: false, 
+                error: 'Error en el servidor' 
             });
         }
     }

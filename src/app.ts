@@ -1,19 +1,19 @@
 import express from 'express';
 import authRouter from './route/auth.route';
+import cors from 'cors';
+import { MembersFakeService } from './db/fake/members.fake.service';
 
 const app = express();
 const PORT = 3001;
 
+// Configuración
+app.use(cors());
 app.use(express.json());
 
-// Routes
-app.use('/api/auth', authRouter);
-
-// Welcome route
-app.get('/', (req, res) => {
-    res.send('Bienvenido al Portal de Membresías de Café Aurora');
-});
+// Inyección de dependencias
+const dbService = new MembersFakeService();
+app.use('/api/auth', authRouter(dbService));
 
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`Backend running on http://localhost:${PORT}`);
 });

@@ -1,3 +1,4 @@
+import { IDBService } from "../IDBService";
 import { Member } from "../../types/member";
 
 const FAKE_MEMBERS: Member[] = [
@@ -21,11 +22,10 @@ const FAKE_MEMBERS: Member[] = [
     }
 ];
 
-export class MembersFakeService {
+export class MembersFakeService implements IDBService {
     async getMemberByCredentials(username: string, password: string): Promise<Member | null> {
-        const member = FAKE_MEMBERS.find(m => 
+        return FAKE_MEMBERS.find(m => 
             m.username === username && m.password === password
-        );
-        return member || null;
+        ) || null;
     }
 }
